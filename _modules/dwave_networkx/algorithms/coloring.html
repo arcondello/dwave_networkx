@@ -1,0 +1,583 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.algorithms.coloring &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dwave_networkx.algorithms.coloring</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dwave_networkx.algorithms.coloring</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">dwave_networkx</span> <span class="k">import</span> <span class="n">_PY2</span>
+<span class="kn">from</span> <span class="nn">dwave_networkx.utils</span> <span class="k">import</span> <span class="n">binary_quadratic_model_sampler</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;min_vertex_coloring&quot;</span><span class="p">,</span> <span class="s2">&quot;is_vertex_coloring&quot;</span><span class="p">,</span> <span class="s2">&quot;is_cycle&quot;</span><span class="p">]</span>
+
+<span class="c1"># compatibility for python 2/3</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+    <span class="nb">range</span> <span class="o">=</span> <span class="n">xrange</span>
+    <span class="n">iteritems</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+    <span class="n">ceil</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">iteritems</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="n">ceil</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">numpy</span>
+    <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">eigenvalues</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="min_vertex_coloring"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.coloring.min_vertex_coloring.html#dwave_networkx.algorithms.coloring.min_vertex_coloring">[docs]</a><span class="nd">@binary_quadratic_model_sampler</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">min_vertex_coloring</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an approximate minimum vertex coloring.</span>
+
+<span class="sd">    Defines a QUBO with ground states corresponding to minimum</span>
+<span class="sd">    vertex colorings and uses the sampler to sample from it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    sampler</span>
+<span class="sd">        A binary quadratic model sampler. A sampler is a process that</span>
+<span class="sd">        samples from low energy states in models defined by an Ising</span>
+<span class="sd">        equation or a Quadratic Unconstrained Binary Optimization</span>
+<span class="sd">        Problem (QUBO). A sampler is expected to have a &#39;sample_qubo&#39;</span>
+<span class="sd">        and &#39;sample_ising&#39; method. A sampler is expected to return an</span>
+<span class="sd">        iterable of samples, in order of increasing energy. If no</span>
+<span class="sd">        sampler is provided, one must be provided using the</span>
+<span class="sd">        `set_default_sampler` function.</span>
+
+<span class="sd">    sampler_args</span>
+<span class="sd">        Additional keyword parameters are passed to the sampler.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    coloring : dict</span>
+<span class="sd">        A coloring for each vertex in G such that no adjacent nodes</span>
+<span class="sd">        share the same color. A dict of the form {node: color, ...}</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [DWMP] Dahl, E., &quot;Programming the D-Wave: Map Coloring Problem&quot;,</span>
+<span class="sd">       https://www.dwavesys.com/sites/default/files/Map%20Coloring%20WP2.pdf</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Samplers by their nature may not return the optimal solution. This</span>
+<span class="sd">    function does not attempt to confirm the quality of the returned</span>
+<span class="sd">    sample.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if the given graph is not connected, apply the function to each connected component</span>
+    <span class="c1"># seperately.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="n">coloring</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">subG</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_component_subgraphs</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+            <span class="n">sub_coloring</span> <span class="o">=</span> <span class="n">min_vertex_coloring</span><span class="p">(</span><span class="n">subG</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">)</span>
+            <span class="n">coloring</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sub_coloring</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">coloring</span>
+
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># number of nodes</span>
+    <span class="n">n_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>  <span class="c1"># number of edges</span>
+
+    <span class="c1"># ok, first up, we can eliminate a few graph types trivially</span>
+
+    <span class="c1"># Graphs with no edges, have chromatic number 1</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">n_edges</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+    <span class="c1"># Complete graphs have chromatic number N</span>
+    <span class="k">if</span> <span class="n">n_edges</span> <span class="o">==</span> <span class="n">n_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_nodes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">color</span> <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="p">)}</span>
+
+    <span class="c1"># The number of variables in the QUBO is approximately the number of nodes in the graph</span>
+    <span class="c1"># times the number of potential colors, so we want as tight an upper bound on the</span>
+    <span class="c1"># chromatic number (chi) as possible</span>
+    <span class="n">chi_ub</span> <span class="o">=</span> <span class="n">_chromatic_number_upper_bound</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">)</span>
+
+    <span class="c1"># now we can start coloring. Without loss of generality, we can determine some of</span>
+    <span class="c1"># the node colors before trying to solve.</span>
+    <span class="n">partial_coloring</span><span class="p">,</span> <span class="n">possible_colors</span><span class="p">,</span> <span class="n">chi_lb</span> <span class="o">=</span> <span class="n">_partial_precolor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">chi_ub</span><span class="p">)</span>
+
+    <span class="c1"># ok, to get the rest of the coloring, we need to start building the QUBO. We do this</span>
+    <span class="c1"># by assigning a variable x_v_c for each node v and color c. This variable will be 1</span>
+    <span class="c1"># when node v is colored c, and 0 otherwise.</span>
+
+    <span class="c1"># let&#39;s assign an index to each of the variables</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">x_vars</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">possible_colors</span><span class="p">[</span><span class="n">v</span><span class="p">]}</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">possible_colors</span><span class="p">}</span>
+
+    <span class="c1"># now we have three different constraints we wish to add.</span>
+
+    <span class="c1"># the first constraint enforces the coloring rule, that for each pair of vertices</span>
+    <span class="c1"># u, v that share an edge, they should be different colors</span>
+    <span class="n">Q_neighbor</span> <span class="o">=</span> <span class="n">_vertex_different_colors_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">x_vars</span><span class="p">)</span>
+
+    <span class="c1"># the second constraint enforces that each vertex has a single color assigned</span>
+    <span class="n">Q_vertex</span> <span class="o">=</span> <span class="n">_vertex_one_color_qubo</span><span class="p">(</span><span class="n">x_vars</span><span class="p">)</span>
+
+    <span class="c1"># the third constraint is that we want a minimum vertex coloring, so we want to</span>
+    <span class="c1"># disincentivize the colors we might not need.</span>
+    <span class="n">Q_min_color</span> <span class="o">=</span> <span class="n">_minimum_coloring_qubo</span><span class="p">(</span><span class="n">x_vars</span><span class="p">,</span> <span class="n">chi_lb</span><span class="p">,</span> <span class="n">chi_ub</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=.</span><span class="mi">75</span><span class="p">)</span>
+
+    <span class="c1"># combine all three constraints</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">Q_neighbor</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">bias</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">Q_vertex</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">bias</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">bias</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">bias</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">bias</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">Q_min_color</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">bias</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">bias</span>
+
+    <span class="c1"># use the sampler to find low energy states</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample_qubo</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">)</span>
+
+    <span class="c1"># we want the lowest energy sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+    <span class="c1"># read off the coloring</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">c</span><span class="p">]]:</span>
+                <span class="n">partial_coloring</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="k">return</span> <span class="n">partial_coloring</span></div>
+
+
+<span class="k">def</span> <span class="nf">_chromatic_number_upper_bound</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">):</span>
+    <span class="c1"># tries to determine an upper bound on the chromatic number of G</span>
+    <span class="c1"># Assumes G is not complete</span>
+
+    <span class="c1"># chi * (chi - 1) &lt;= 2 * |E|</span>
+    <span class="n">quad_bound</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">n_edges</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n_nodes</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">is_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+        <span class="c1"># odd cycle graphs need three colors</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">eigenvalues</span><span class="p">:</span>
+            <span class="c1"># chi &lt;= max degree, unless it is complete or a cycle graph of odd length,</span>
+            <span class="c1"># in which case chi &lt;= max degree + 1 (Brook&#39;s Theorem)</span>
+            <span class="n">bound</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Let A be the adj matrix of G (symmetric, 0 on diag). Let theta_1</span>
+            <span class="c1"># be the largest eigenvalue of A. Then chi &lt;= theta_1 + 1 with</span>
+            <span class="c1"># equality iff G is complete or an odd cycle.</span>
+            <span class="c1"># this is strictly better than brooks theorem</span>
+            <span class="n">bound</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_matrix</span><span class="p">(</span><span class="n">G</span><span class="p">))))</span>
+
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">quad_bound</span><span class="p">,</span> <span class="n">bound</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_minimum_coloring_qubo</span><span class="p">(</span><span class="n">x_vars</span><span class="p">,</span> <span class="n">chi_lb</span><span class="p">,</span> <span class="n">chi_ub</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;We want to disincentivize unneeded colors. Generates the QUBO</span>
+<span class="sd">    that does that.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if we already know the chromatic number, then we don&#39;t need to</span>
+    <span class="c1"># disincentivize any colors.</span>
+    <span class="k">if</span> <span class="n">chi_lb</span> <span class="o">==</span> <span class="n">chi_ub</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="c1"># we might need to use some of the colors, so we want to disincentivize</span>
+    <span class="c1"># them in increasing amounts, linearly.</span>
+    <span class="n">scaling</span> <span class="o">=</span> <span class="n">magnitude</span> <span class="o">/</span> <span class="p">(</span><span class="n">chi_ub</span> <span class="o">-</span> <span class="n">chi_lb</span><span class="p">)</span>
+
+    <span class="c1"># build the QUBO</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">chi_lb</span><span class="p">,</span> <span class="n">chi_ub</span><span class="p">)):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">color</span><span class="p">]</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">scaling</span>
+
+    <span class="k">return</span> <span class="n">Q</span>
+
+
+<span class="k">def</span> <span class="nf">_vertex_different_colors_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">x_vars</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For each vertex, it should not have the same color as any of its</span>
+<span class="sd">    neighbors. Generates the QUBO to enforce this constraint.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not enforce each node having a single color.</span>
+
+<span class="sd">    Ground energy is 0, infeasible gap is 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x_vars</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="n">Q</span><span class="p">[(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">color</span><span class="p">],</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">color</span><span class="p">])]</span> <span class="o">=</span> <span class="mf">1.</span>
+    <span class="k">return</span> <span class="n">Q</span>
+
+
+<span class="k">def</span> <span class="nf">_vertex_one_color_qubo</span><span class="p">(</span><span class="n">x_vars</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;For each vertex, it should have exactly one color. Generates</span>
+<span class="sd">    the QUBO to enforce this constraint.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Does not enforce neighboring vertices having different colors.</span>
+
+<span class="sd">    Ground energy is -1 * |G|, infeasible gap is 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">color</span><span class="p">]</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">idx</span><span class="p">,</span> <span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">color0</span><span class="p">,</span> <span class="n">color1</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">idx0</span> <span class="o">=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">color0</span><span class="p">]</span>
+            <span class="n">idx1</span> <span class="o">=</span> <span class="n">x_vars</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">color1</span><span class="p">]</span>
+
+            <span class="n">Q</span><span class="p">[(</span><span class="n">idx0</span><span class="p">,</span> <span class="n">idx1</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">Q</span>
+
+
+<span class="k">def</span> <span class="nf">_partial_precolor</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">chi_ub</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;In order to reduce the number of variables in the QUBO, we want to</span>
+<span class="sd">    color as many nodes as possible without affecting the min vertex</span>
+<span class="sd">    coloring. Without loss of generality, we can choose a single maximal</span>
+<span class="sd">    clique and color each node in it uniquely.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        partial_coloring : dict</span>
+<span class="sd">        A dict describing a partial coloring of the nodes of G. Of the form</span>
+<span class="sd">        {node: color, ...}.</span>
+
+<span class="sd">        possible_colors : dict</span>
+<span class="sd">        A dict giving the possible colors for each node in G not already</span>
+<span class="sd">        colored. Of the form {node: set([color, ...]), ...}.</span>
+
+<span class="sd">        chi_lb : int</span>
+<span class="sd">        A lower bound on the chromatic number chi.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        partial_coloring.keys() and possible_colors.keys() should be</span>
+<span class="sd">        disjoint.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># find a random maximal clique and give each node in it a unique color</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+    <span class="n">clique</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">clique</span><span class="p">):</span>
+            <span class="n">clique</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+    <span class="n">partial_coloring</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clique</span><span class="p">)}</span>
+    <span class="n">chi_lb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">partial_coloring</span><span class="p">)</span>  <span class="c1"># lower bound for the chromatic number</span>
+
+    <span class="c1"># now for each uncolored node determine the possible colors</span>
+    <span class="n">possible_colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">chi_ub</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">partial_coloring</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">partial_coloring</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">possible_colors</span><span class="p">:</span>
+                <span class="n">possible_colors</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
+    <span class="c1"># TODO: there is more here that can be done. For instance some nodes now</span>
+    <span class="c1"># might only have one possible color. Or there might only be one node</span>
+    <span class="c1"># remaining to color</span>
+
+    <span class="k">return</span> <span class="n">partial_coloring</span><span class="p">,</span> <span class="n">possible_colors</span><span class="p">,</span> <span class="n">chi_lb</span>
+
+
+<span class="k">def</span> <span class="nf">is_cycle</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether the given graph is a cycle or circle graph.</span>
+
+<span class="sd">    A cycle graph or circular graph is a graph that consists of a single cycle.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Cycle_graph</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_cycle : bool</span>
+<span class="sd">        True if the graph consists of a single cycle.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trailing</span><span class="p">,</span> <span class="n">leading</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
+    <span class="n">start_node</span> <span class="o">=</span> <span class="n">trailing</span>
+
+    <span class="c1"># travel around the graph, checking that each node has degree exactly two</span>
+    <span class="c1"># also track how many nodes were visited</span>
+    <span class="n">n_visited</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">leading</span> <span class="o">!=</span> <span class="n">start_node</span><span class="p">:</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">leading</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbors</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span> <span class="o">=</span> <span class="n">neighbors</span>
+
+        <span class="k">if</span> <span class="n">node1</span> <span class="o">==</span> <span class="n">trailing</span><span class="p">:</span>
+            <span class="n">trailing</span><span class="p">,</span> <span class="n">leading</span> <span class="o">=</span> <span class="n">leading</span><span class="p">,</span> <span class="n">node2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trailing</span><span class="p">,</span> <span class="n">leading</span> <span class="o">=</span> <span class="n">leading</span><span class="p">,</span> <span class="n">node1</span>
+
+        <span class="n">n_visited</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># if we haven&#39;t visited all of the nodes, then it is not a connected cycle</span>
+    <span class="k">return</span> <span class="n">n_visited</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="is_vertex_coloring"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.coloring.is_vertex_coloring.html#dwave_networkx.algorithms.coloring.is_vertex_coloring">[docs]</a><span class="k">def</span> <span class="nf">is_vertex_coloring</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">coloring</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether the given coloring is a vertex coloring of G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    coloring : dict</span>
+<span class="sd">        A coloring of the nodes of G. Should be a dict of the form</span>
+<span class="sd">        {node: color, ...}.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_vertex_coloring : bool</span>
+<span class="sd">        True if the given coloring defines a vertex coloring. That is no</span>
+<span class="sd">        two adjacent vertices share a color.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">coloring</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">!=</span> <span class="n">coloring</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

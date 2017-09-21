@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.social\.network\_imbalance
+=======================================================
+
+.. currentmodule:: dwave_networkx.algorithms.social
+
+.. autofunction:: network_imbalance

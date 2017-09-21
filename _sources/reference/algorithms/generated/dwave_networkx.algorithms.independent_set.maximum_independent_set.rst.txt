@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.independent\_set\.maximum\_independent\_set
+========================================================================
+
+.. currentmodule:: dwave_networkx.algorithms.independent_set
+
+.. autofunction:: maximum_independent_set

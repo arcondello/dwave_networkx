@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.algorithms.social &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dwave_networkx.algorithms.social</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dwave_networkx.algorithms.social</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">dwave_networkx.utils</span> <span class="k">import</span> <span class="n">binary_quadratic_model_sampler</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;network_imbalance&quot;</span><span class="p">]</span>
+
+<span class="c1"># compatibility for python 2/3</span>
+<span class="n">PY2</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">if</span> <span class="n">PY2</span><span class="p">:</span>
+    <span class="n">iteritems</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">iteritems</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="network_imbalance"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.social.network_imbalance.html#dwave_networkx.algorithms.social.network_imbalance">[docs]</a><span class="nd">@binary_quadratic_model_sampler</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">network_imbalance</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an approximate set of frustrated edges and a bicoloring.</span>
+
+<span class="sd">    A signed social network graph is a graph whose signed edges</span>
+<span class="sd">    represent friendly/hostile interactions between nodes. A</span>
+<span class="sd">    signed social network is considered balanced if it can be cleanly</span>
+<span class="sd">    divided into two factions, where all relations within a faction are</span>
+<span class="sd">    friendly, and all relations between factions are hostile. The measure</span>
+<span class="sd">    of imbalance or frustration is the minimum number of edges that</span>
+<span class="sd">    violate this rule.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    S : NetworkX graph</span>
+<span class="sd">        Must be a social graph, that is each edge should have a &#39;sign&#39;</span>
+<span class="sd">        attribute with a numeric value.</span>
+
+<span class="sd">    sampler</span>
+<span class="sd">        A binary quadratic model sampler. A sampler is a process that</span>
+<span class="sd">        samples from low energy states in models defined by an Ising</span>
+<span class="sd">        equation or a Quadratic Unconstrainted Binary Optimization</span>
+<span class="sd">        Problem (QUBO). A sampler is expected to have a &#39;sample_qubo&#39;</span>
+<span class="sd">        and &#39;sample_ising&#39; method. A sampler is expected to return an</span>
+<span class="sd">        iterable of samples, in order of increasing energy. If no</span>
+<span class="sd">        sampler is provided, one must be provided using the</span>
+<span class="sd">        `set_default_sampler` function.</span>
+
+<span class="sd">    sampler_args</span>
+<span class="sd">        Additional keyword parameters are passed to the sampler.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    frustrated_edges : dict</span>
+<span class="sd">        A dictionary of the edges that violate the edge sign. The imbalance</span>
+<span class="sd">        of the network is the length of frustrated_edges.</span>
+
+<span class="sd">    colors: dict</span>
+<span class="sd">        A bicoloring of the nodes into two factions.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If any edge does not have a &#39;sign&#39; attribute.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; S = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; S.add_edge(&#39;Alice&#39;, &#39;Bob&#39;, sign=1)  # Alice and Bob are friendly</span>
+<span class="sd">    &gt;&gt;&gt; S.add_edge(&#39;Alice&#39;, &#39;Eve&#39;, sign=-1)  # Alice and Eve are hostile</span>
+<span class="sd">    &gt;&gt;&gt; S.add_edge(&#39;Bob&#39;, &#39;Eve&#39;, sign=-1)  # Bob and Eve are hostile</span>
+<span class="sd">    &gt;&gt;&gt; frustrated_edges, colors = dnx.network_imbalance(S, sampler)</span>
+<span class="sd">    &gt;&gt;&gt; print(frustrated_edges)</span>
+<span class="sd">    {}</span>
+<span class="sd">    &gt;&gt;&gt; print(colors)  # doctest: +SKIP</span>
+<span class="sd">    {&#39;Alice&#39;: 0, &#39;Bob&#39;: 0, &#39;Eve&#39;: 1}</span>
+<span class="sd">    &gt;&gt;&gt; S.add_edge(&#39;Ted&#39;, &#39;Bob&#39;, sign=1)  # Ted is friendly with all</span>
+<span class="sd">    &gt;&gt;&gt; S.add_edge(&#39;Ted&#39;, &#39;Alice&#39;, sign=1)</span>
+<span class="sd">    &gt;&gt;&gt; S.add_edge(&#39;Ted&#39;, &#39;Eve&#39;, sign=1)</span>
+<span class="sd">    &gt;&gt;&gt; frustrated_edges, colors = dnx.network_imbalance(S, sampler)</span>
+<span class="sd">    &gt;&gt;&gt; print(frustrated_edges)</span>
+<span class="sd">    {(&#39;Ted&#39;, &#39;Eve&#39;): {&#39;sign&#39;: 1}}</span>
+<span class="sd">    &gt;&gt;&gt; print(colors)  # doctest: +SKIP</span>
+<span class="sd">    {&#39;Bob&#39;: 1, &#39;Ted&#39;: 1, &#39;Alice&#39;: 1, &#39;Eve&#39;: 0}</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Samplers by their nature may not return the optimal solution. This</span>
+<span class="sd">    function does not attempt to confirm the quality of the returned</span>
+<span class="sd">    sample.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Ising_model</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [FIA] Facchetti, G., Iacono G., and Altafini C. (2011). Computing</span>
+<span class="sd">       global structural balance in large-scale signed social networks.</span>
+<span class="sd">       PNAS, 108, no. 52, 20953-20958</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># format as an Ising problem</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">S</span><span class="p">}</span>  <span class="c1"># linear biases</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># quadratic biases</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">J</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;sign&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">((</span><span class="s2">&quot;graph should be a signed social graph,&quot;</span>
+                              <span class="s2">&quot;each edge should have a &#39;sign&#39; attr&quot;</span><span class="p">))</span>
+
+    <span class="c1"># use the sampler to find low energy states</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample_ising</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">)</span>
+
+    <span class="c1"># we want the lowest energy sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+    <span class="c1"># spins determine the color</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="p">(</span><span class="n">spin</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">sample</span><span class="p">)}</span>
+
+    <span class="c1"># frustrated edges are the ones that are violated</span>
+    <span class="n">frustrated_edges</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">S</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;sign&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">sign</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">colors</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">!=</span> <span class="n">colors</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">frustrated_edges</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">sign</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">colors</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">==</span> <span class="n">colors</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">frustrated_edges</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># sign == 0, no relation to violate</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">frustrated_edges</span><span class="p">,</span> <span class="n">colors</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

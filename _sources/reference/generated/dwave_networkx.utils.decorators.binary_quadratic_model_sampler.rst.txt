@@ -1,0 +1,6 @@
+dwave\_networkx\.utils\.decorators\.binary\_quadratic\_model\_sampler
+=====================================================================
+
+.. currentmodule:: dwave_networkx.utils.decorators
+
+.. autofunction:: binary_quadratic_model_sampler

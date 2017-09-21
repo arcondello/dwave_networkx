@@ -1,0 +1,556 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.algorithms.matching &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dwave_networkx.algorithms.matching</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dwave_networkx.algorithms.matching</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">dwave_networkx.utils</span> <span class="k">import</span> <span class="n">binary_quadratic_model_sampler</span>
+<span class="kn">from</span> <span class="nn">dwave_networkx</span> <span class="k">import</span> <span class="n">_PY2</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;min_maximal_matching&#39;</span><span class="p">,</span> <span class="s1">&#39;is_matching&#39;</span><span class="p">,</span> <span class="s1">&#39;is_maximal_matching&#39;</span><span class="p">]</span>
+
+<span class="c1"># compatibility for python 2/3</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+    <span class="nb">range</span> <span class="o">=</span> <span class="n">xrange</span>
+    <span class="n">iteritems</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+    <span class="n">itervalues</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">itervalues</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">iteritems</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="n">itervalues</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+
+<span class="nd">@binary_quadratic_model_sampler</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Finds an approximate maximal matching.</span>
+
+<span class="sd">    Defines a QUBO with ground states corresponding to a maximal</span>
+<span class="sd">    matching and uses the sampler to sample from it.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than</span>
+<span class="sd">    once. A maximal matching is one in which no edges from G can be</span>
+<span class="sd">    added without violating the matching rule.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    sampler</span>
+<span class="sd">        A binary quadratic model sampler. A sampler is a process that</span>
+<span class="sd">        samples from low energy states in models defined by an Ising</span>
+<span class="sd">        equation or a Quadratic Unconstrained Binary Optimization</span>
+<span class="sd">        Problem (QUBO). A sampler is expected to have a &#39;sample_qubo&#39;</span>
+<span class="sd">        and &#39;sample_ising&#39; method. A sampler is expected to return an</span>
+<span class="sd">        iterable of samples, in order of increasing energy. If no</span>
+<span class="sd">        sampler is provided, one must be provided using the</span>
+<span class="sd">        `set_default_sampler` function.</span>
+
+<span class="sd">    sampler_args</span>
+<span class="sd">        Additional keyword parameters are passed to the sampler.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matching : set</span>
+<span class="sd">        A maximal matching of the graph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Samplers by their nature may not return the optimal solution. This</span>
+<span class="sd">    function does not attempt to confirm the quality of the returned</span>
+<span class="sd">    sample.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Matching_(graph_theory)</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Based on the formulation presented in [AL]_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the maximum degree</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># use the maximum degree to determine the infeasible gaps</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="mf">1.</span>
+    <span class="k">if</span> <span class="n">delta</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="o">.</span><span class="mi">75</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="o">.</span><span class="mi">75</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="p">(</span><span class="n">delta</span> <span class="o">-</span> <span class="mf">2.</span><span class="p">)</span>  <span class="c1"># we want A &gt; (delta - 2) * B</span>
+
+    <span class="c1"># each edge in G gets a variable, so let&#39;s create those</span>
+    <span class="n">edge_mapping</span> <span class="o">=</span> <span class="n">_edge_mapping</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># build the QUBO</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">_maximal_matching_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_mapping</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
+    <span class="n">Qm</span> <span class="o">=</span> <span class="n">_matching_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_mapping</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="n">A</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">bias</span> <span class="ow">in</span> <span class="n">Qm</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">+=</span> <span class="n">bias</span>
+
+    <span class="c1"># use the sampler to find low energy states</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample_qubo</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">)</span>
+
+    <span class="c1"># we want the lowest energy sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+    <span class="c1"># the matching are the edges that are 1 in the sample</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span> <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="n">edge_mapping</span><span class="p">[</span><span class="n">edge</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="min_maximal_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.matching.min_maximal_matching.html#dwave_networkx.algorithms.matching.min_maximal_matching">[docs]</a><span class="nd">@binary_quadratic_model_sampler</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">min_maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an approximate minimal maximal matching.</span>
+
+<span class="sd">    Defines a QUBO with ground states corresponding to a minimal</span>
+<span class="sd">    maximal matching and uses the sampler to sample from it.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than</span>
+<span class="sd">    once. A maximal matching is one in which no edges from G can be</span>
+<span class="sd">    added without violating the matching rule. A minimal maximal</span>
+<span class="sd">    matching is the smallest maximal matching for G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    sampler</span>
+<span class="sd">        A binary quadratic model sampler. A sampler is a process that</span>
+<span class="sd">        samples from low energy states in models defined by an Ising</span>
+<span class="sd">        equation or a Quadratic Unconstrained Binary Optimization</span>
+<span class="sd">        Problem (QUBO). A sampler is expected to have a &#39;sample_qubo&#39;</span>
+<span class="sd">        and &#39;sample_ising&#39; method. A sampler is expected to return an</span>
+<span class="sd">        iterable of samples, in order of increasing energy. If no</span>
+<span class="sd">        sampler is provided, one must be provided using the</span>
+<span class="sd">        `set_default_sampler` function.</span>
+
+<span class="sd">    sampler_args</span>
+<span class="sd">        Additional keyword parameters are passed to the sampler.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    matching : set</span>
+<span class="sd">        A minimal maximal matching of the graph.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Samplers by their nature may not return the optimal solution. This</span>
+<span class="sd">    function does not attempt to confirm the quality of the returned</span>
+<span class="sd">    sample.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Matching_(graph_theory)</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [AL] Lucas, A. (2014). Ising formulations of many NP problems.</span>
+<span class="sd">       Frontiers in Physics, Volume 2, Article 5.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># the maximum degree</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># use the maximum degree to determine the infeasible gaps</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="mf">1.</span>
+    <span class="k">if</span> <span class="n">delta</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="o">.</span><span class="mi">75</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="o">.</span><span class="mi">75</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="p">(</span><span class="n">delta</span> <span class="o">-</span> <span class="mf">2.</span><span class="p">)</span>  <span class="c1"># we want A &gt; (delta - 2) * B</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="o">.</span><span class="mi">75</span> <span class="o">*</span> <span class="n">B</span>  <span class="c1"># we want B &gt; C</span>
+
+    <span class="c1"># each edge in G gets a variable, so let&#39;s create those</span>
+    <span class="n">edge_mapping</span> <span class="o">=</span> <span class="n">_edge_mapping</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># build the QUBO</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">_maximal_matching_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_mapping</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="n">B</span><span class="p">)</span>
+    <span class="n">Qm</span> <span class="o">=</span> <span class="n">_matching_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_mapping</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="n">A</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">bias</span> <span class="ow">in</span> <span class="n">Qm</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">+=</span> <span class="n">bias</span>
+
+    <span class="c1"># to enforce the minimal constraint, we additionally add a small bias to</span>
+    <span class="c1"># each variable</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">C</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">C</span>
+
+    <span class="c1"># use the sampler to find low energy states</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample_qubo</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">)</span>
+
+    <span class="c1"># we want the lowest energy sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+    <span class="c1"># the matching are the edges that are 1 in the sample</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span> <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="n">edge_mapping</span><span class="p">[</span><span class="n">edge</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.matching.is_matching.html#dwave_networkx.algorithms.matching.is_matching">[docs]</a><span class="k">def</span> <span class="nf">is_matching</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether the given set of edges is a matching.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than</span>
+<span class="sd">    once.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    edges : iterable</span>
+<span class="sd">        A iterable of edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_matching : bool</span>
+<span class="sd">        True if the given edges are a matching.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">edges</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="is_maximal_matching"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.matching.is_maximal_matching.html#dwave_networkx.algorithms.matching.is_maximal_matching">[docs]</a><span class="k">def</span> <span class="nf">is_maximal_matching</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">matching</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether the given set of edges is a maximal matching.</span>
+
+<span class="sd">    A matching is a subset of edges in which no node occurs more than</span>
+<span class="sd">    once. The cardinality of a matching is the number of matched edges.</span>
+<span class="sd">    A maximal matching is one where one cannot add any more edges</span>
+<span class="sd">    without violating the matching rule.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    edges : iterable</span>
+<span class="sd">        A iterable of edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_matching : bool</span>
+<span class="sd">        True if the given edges are a maximal matching.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">touched_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">matching</span><span class="p">)</span>
+
+    <span class="c1"># first check if a matching</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">touched_nodes</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># now for each edge, check that at least one of its variables is</span>
+    <span class="c1"># already in the matching</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">touched_nodes</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">touched_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="k">def</span> <span class="nf">_edge_mapping</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assigns a variable for each edge in G.</span>
+<span class="sd">    (u, v) and (v, u) map to the same variable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edge_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">edge</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)}</span>
+    <span class="n">edge_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">({(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e0</span><span class="p">):</span> <span class="n">idx</span> <span class="k">for</span> <span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">),</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">edge_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="k">return</span> <span class="n">edge_mapping</span>
+
+
+<span class="k">def</span> <span class="nf">_maximal_matching_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_mapping</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates a QUBO that when combined with one as generated by _matching_qubo,</span>
+<span class="sd">    induces a maximal matching on the given graph G.</span>
+<span class="sd">    The variables in the QUBO are the edges, as given my edge_mapping.</span>
+
+<span class="sd">    ground_energy = -1 * magnitude * |edges|</span>
+<span class="sd">    infeasible_gap &gt;= magnitude</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># for each node n in G, define a variable y_n to be 1 when n has a colored edge</span>
+    <span class="c1"># and 0 otherwise.</span>
+    <span class="c1"># for each edge (u, v) in the graph we want to enforce y_u OR y_v. This is because</span>
+    <span class="c1"># if both y_u == 0 and y_v == 0, then we could add (u, v) to the matching.</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="c1"># 1 - y_v - y_u + y_v*y_u</span>
+
+        <span class="c1"># for each edge connected to u</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">edge_mapping</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+                <span class="n">Q</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">magnitude</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Q</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span> <span class="o">-=</span> <span class="n">magnitude</span>
+
+        <span class="c1"># for each edge connected to v</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">edge_mapping</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+                <span class="n">Q</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">magnitude</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Q</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span> <span class="o">-=</span> <span class="n">magnitude</span>
+
+        <span class="k">for</span> <span class="n">e0</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="n">edge_mapping</span><span class="p">[</span><span class="n">e0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">edge_mapping</span><span class="p">[</span><span class="n">e1</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+                        <span class="n">Q</span><span class="p">[(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">magnitude</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">Q</span><span class="p">[(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">magnitude</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+                        <span class="n">Q</span><span class="p">[(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">magnitude</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">Q</span><span class="p">[(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x0</span><span class="p">)]</span> <span class="o">+=</span> <span class="n">magnitude</span>
+
+    <span class="k">return</span> <span class="n">Q</span>
+
+
+<span class="k">def</span> <span class="nf">_matching_qubo</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_mapping</span><span class="p">,</span> <span class="n">magnitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates a QUBO that induces a matching on the given graph G.</span>
+<span class="sd">    The variables in the QUBO are the edges, as given my edge_mapping.</span>
+
+<span class="sd">    ground_energy = 0</span>
+<span class="sd">    infeasible_gap = magnitude</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># We wish to enforce the behavior that no node has two colored edges</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+
+        <span class="c1"># for each pair of edges that contain node</span>
+        <span class="k">for</span> <span class="n">edge0</span><span class="p">,</span> <span class="n">edge1</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+
+            <span class="n">v0</span> <span class="o">=</span> <span class="n">edge_mapping</span><span class="p">[</span><span class="n">edge0</span><span class="p">]</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">edge_mapping</span><span class="p">[</span><span class="n">edge1</span><span class="p">]</span>
+
+            <span class="c1"># penalize both being True</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">magnitude</span>
+
+    <span class="k">return</span> <span class="n">Q</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

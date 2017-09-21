@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Setting a default sampler &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../index.html"/>
+        <link rel="up" title="Reference" href="index.html"/>
+        <link rel="next" title="dwave_networkx.default_sampler.set_default_sampler" href="generated/dwave_networkx.default_sampler.set_default_sampler.html"/>
+        <link rel="prev" title="dwave_networkx.exceptions.DWaveNetworkXMissingSampler" href="generated/dwave_networkx.exceptions.DWaveNetworkXMissingSampler.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="algorithms/index.html">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="drawing.html">Drawing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Graph generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Setting a default sampler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#api-definition">API Definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-sampler">Example sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-default-sampler-set">No default sampler set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Setting a default sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unsetting-a-default-sampler">Unsetting a default sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dwave_networkx.default_sampler.set_default_sampler.html">dwave_networkx.default_sampler.set_default_sampler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dwave_networkx.default_sampler.unset_default_sampler.html">dwave_networkx.default_sampler.unset_default_sampler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dwave_networkx.default_sampler.get_default_sampler.html">dwave_networkx.default_sampler.get_default_sampler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Reference</a> &raquo;</li>
+        
+      <li>Setting a default sampler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/default_sampler.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-dwave_networkx.default_sampler">
+<span id="setting-a-default-sampler"></span><span id="default-sampler"></span><h1>Setting a default sampler<a class="headerlink" href="#module-dwave_networkx.default_sampler" title="Permalink to this headline">¶</a></h1>
+<p>Allows the user to specify a binary quadratic model sampler in a single place.</p>
+<div class="section" id="api-definition">
+<h2>API Definition<a class="headerlink" href="#api-definition" title="Permalink to this headline">¶</a></h2>
+<p>A sampler is a process that samples
+from low energy states in models defined by an Ising equation
+or a Quadratic Unconstrained Binary Optimization Problem
+(QUBO). A sampler is expected to have a ‘sample_qubo’ and
+‘sample_ising’ method. A sampler is expected to return an
+iterable of samples, in order of increasing energy.</p>
+</div>
+<div class="section" id="example-sampler">
+<h2>Example sampler<a class="headerlink" href="#example-sampler" title="Permalink to this headline">¶</a></h2>
+<p>First we can create a stand in for a binary quadratic model sampler that can be
+used in the following examples.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ExampleSampler</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c1"># an example sampler, only works for independent set on complete</span>
+<span class="gp">... </span>    <span class="c1"># graphs</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">sample_ising</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">h</span><span class="p">}</span>
+<span class="gp">... </span>        <span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># set one node to true</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">[</span><span class="n">sample</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">sample_qubo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="o">*</span><span class="n">Q</span><span class="p">)}</span>
+<span class="gp">... </span>        <span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># set one node to true</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="p">[</span><span class="n">sample</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="no-default-sampler-set">
+<h2>No default sampler set<a class="headerlink" href="#no-default-sampler-set" title="Permalink to this headline">¶</a></h2>
+<p>If the user wishes to specify which sampler each binary quadratic model sampler
+algorithm uses, the user can provide the sampler directly to
+the functions.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sampler</span> <span class="o">=</span> <span class="n">ExampleSampler</span><span class="p">(</span><span class="s1">&#39;sampler&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">maximum_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler</span><span class="p">)</span>
+<span class="go">[0]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Setting a default sampler<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively, the user can specify a sampler that will be used
+by default.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sampler0</span> <span class="o">=</span> <span class="n">ExampleSampler</span><span class="p">(</span><span class="s1">&#39;sampler0&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">set_default_sampler</span><span class="p">(</span><span class="n">sampler0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This sampler will now be used by any function where no sampler
+is specified</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">maximum_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">[0]</span>
+</pre></div>
+</div>
+<p>A different sampler can still be provided, in which case the
+provided sampler will be used instead of the default.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sampler1</span> <span class="o">=</span> <span class="n">ExampleSampler</span><span class="p">(</span><span class="s1">&#39;sampler1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">set_default_sampler</span><span class="p">(</span><span class="n">sampler0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">maximum_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler1</span><span class="p">)</span>
+<span class="go">[0]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unsetting-a-default-sampler">
+<h2>Unsetting a default sampler<a class="headerlink" href="#unsetting-a-default-sampler" title="Permalink to this headline">¶</a></h2>
+<p>The user can also unset the default.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">unset_default_sampler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dnx</span><span class="o">.</span><span class="n">get_default_sampler</span><span class="p">())</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/dwave_networkx.default_sampler.set_default_sampler.html#dwave_networkx.default_sampler.set_default_sampler" title="dwave_networkx.default_sampler.set_default_sampler"><code class="xref py py-obj docutils literal"><span class="pre">set_default_sampler</span></code></a>(sampler)</td>
+<td>Sets a default binary quadratic model sampler.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/dwave_networkx.default_sampler.unset_default_sampler.html#dwave_networkx.default_sampler.unset_default_sampler" title="dwave_networkx.default_sampler.unset_default_sampler"><code class="xref py py-obj docutils literal"><span class="pre">unset_default_sampler</span></code></a>()</td>
+<td>Resets the default sampler back to None.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/dwave_networkx.default_sampler.get_default_sampler.html#dwave_networkx.default_sampler.get_default_sampler" title="dwave_networkx.default_sampler.get_default_sampler"><code class="xref py py-obj docutils literal"><span class="pre">get_default_sampler</span></code></a>()</td>
+<td>Gets the current default sampler.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/dwave_networkx.default_sampler.set_default_sampler.html" class="btn btn-neutral float-right" title="dwave_networkx.default_sampler.set_default_sampler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="generated/dwave_networkx.exceptions.DWaveNetworkXMissingSampler.html" class="btn btn-neutral" title="dwave_networkx.exceptions.DWaveNetworkXMissingSampler" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

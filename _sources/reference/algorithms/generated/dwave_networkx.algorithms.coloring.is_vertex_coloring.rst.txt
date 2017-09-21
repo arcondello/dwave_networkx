@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.coloring\.is\_vertex\_coloring
+===========================================================
+
+.. currentmodule:: dwave_networkx.algorithms.coloring
+
+.. autofunction:: is_vertex_coloring

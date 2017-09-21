@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.elimination\_ordering\.minor\_min\_width
+=====================================================================
+
+.. currentmodule:: dwave_networkx.algorithms.elimination_ordering
+
+.. autofunction:: minor_min_width

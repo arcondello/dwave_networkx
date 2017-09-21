@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.algorithms.independent_set &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dwave_networkx.algorithms.independent_set</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dwave_networkx.algorithms.independent_set</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dwave_networkx.utils</span> <span class="k">import</span> <span class="n">binary_quadratic_model_sampler</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;maximum_independent_set&quot;</span><span class="p">,</span> <span class="s2">&quot;is_independent_set&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="maximum_independent_set"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.independent_set.maximum_independent_set.html#dwave_networkx.algorithms.independent_set.maximum_independent_set">[docs]</a><span class="nd">@binary_quadratic_model_sampler</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">maximum_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns an approximate maximum independent set.</span>
+
+<span class="sd">    Defines a QUBO with ground states corresponding to a</span>
+<span class="sd">    maximum independent set and uses the sampler to sample from</span>
+<span class="sd">    it.</span>
+
+<span class="sd">    An independent set is a set of nodes such that the subgraph</span>
+<span class="sd">    of G induced by these nodes contains no edges. A maximum</span>
+<span class="sd">    independent set is an independent set of largest possible size.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    sampler</span>
+<span class="sd">        A binary quadratic model sampler. A sampler is a process that</span>
+<span class="sd">        samples from low energy states in models defined by an Ising</span>
+<span class="sd">        equation or a Quadratic Unconstrained Binary Optimization</span>
+<span class="sd">        Problem (QUBO). A sampler is expected to have a &#39;sample_qubo&#39;</span>
+<span class="sd">        and &#39;sample_ising&#39; method. A sampler is expected to return an</span>
+<span class="sd">        iterable of samples, in order of increasing energy. If no</span>
+<span class="sd">        sampler is provided, one must be provided using the</span>
+<span class="sd">        `set_default_sampler` function.</span>
+
+<span class="sd">    sampler_args</span>
+<span class="sd">        Additional keyword parameters are passed to the sampler.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indep_nodes : list</span>
+<span class="sd">       List of nodes that the form a maximum independent set, as</span>
+<span class="sd">       determined by the given sampler.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.path_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; dnx.maximum_independent_set(G, sampler)</span>
+<span class="sd">    [0, 2, 4]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Samplers by their nature may not return the optimal solution. This</span>
+<span class="sd">    function does not attempt to confirm the quality of the returned</span>
+<span class="sd">    sample.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Independent_set_(graph_theory)</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [AL] Lucas, A. (2014). Ising formulations of many NP problems.</span>
+<span class="sd">       Frontiers in Physics, Volume 2, Article 5.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># We assume that the sampler can handle an unstructured QUBO problem, so let&#39;s set one up.</span>
+    <span class="c1"># Let us define the largest independent set to be S.</span>
+    <span class="c1"># For each node n in the graph, we assign a boolean variable v_n, where v_n = 1 when n</span>
+    <span class="c1"># is in S and v_n = 0 otherwise.</span>
+    <span class="c1"># We call the matrix defining our QUBO problem Q.</span>
+    <span class="c1"># On the diagnonal, we assign the linear bias for each node to be -1. This means that each</span>
+    <span class="c1"># node is biased towards being in S</span>
+    <span class="c1"># On the off diagnonal, we assign the off-diagonal terms of Q to be 2. Thus, if both</span>
+    <span class="c1"># nodes are in S, the overall energy is increased by 2.</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">{(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span> <span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+    <span class="n">Q</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">edge</span><span class="p">:</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">})</span>
+
+    <span class="c1"># use the sampler to find low energy states</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample_qubo</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="o">**</span><span class="n">sampler_args</span><span class="p">)</span>
+
+    <span class="c1"># we want the lowest energy sample</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">response</span><span class="p">))</span>
+
+    <span class="c1"># nodes that are spin up or true are exactly the ones in S.</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sample</span> <span class="k">if</span> <span class="n">sample</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="is_independent_set"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.independent_set.is_independent_set.html#dwave_networkx.algorithms.independent_set.is_independent_set">[docs]</a><span class="k">def</span> <span class="nf">is_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">indep_nodes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether the given nodes form an independent set.</span>
+
+<span class="sd">    An independent set is a set of nodes such that the subgraph</span>
+<span class="sd">    of G induced by these nodes contains no edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX graph</span>
+
+<span class="sd">    indep_nodes : list</span>
+<span class="sd">       List of nodes that the form a maximum independent set, as</span>
+<span class="sd">       determined by the given sampler.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    is_independent : bool</span>
+<span class="sd">        True if indep_nodes form an independent set.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">indep_nodes</span><span class="p">)</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

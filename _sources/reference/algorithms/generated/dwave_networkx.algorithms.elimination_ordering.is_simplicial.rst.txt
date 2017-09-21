@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.elimination\_ordering\.is\_simplicial
+==================================================================
+
+.. currentmodule:: dwave_networkx.algorithms.elimination_ordering
+
+.. autofunction:: is_simplicial

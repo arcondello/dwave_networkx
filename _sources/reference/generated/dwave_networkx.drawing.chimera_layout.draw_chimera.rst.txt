@@ -1,0 +1,6 @@
+dwave\_networkx\.drawing\.chimera\_layout\.draw\_chimera
+========================================================
+
+.. currentmodule:: dwave_networkx.drawing.chimera_layout
+
+.. autofunction:: draw_chimera

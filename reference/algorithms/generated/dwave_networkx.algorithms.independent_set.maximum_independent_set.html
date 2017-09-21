@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.algorithms.independent_set.maximum_independent_set &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Independent Set" href="../packing.html"/>
+        <link rel="next" title="dwave_networkx.algorithms.independent_set.is_independent_set" href="dwave_networkx.algorithms.independent_set.is_independent_set.html"/>
+        <link rel="prev" title="Independent Set" href="../packing.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Algorithms</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../coloring.html">Coloring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cover.html">Cover</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../elimination_ordering.html">Elimination ordering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../matching.html">Matching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../max_cut.html">Maximum Cut</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../packing.html">Independent Set</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dwave_networkx.algorithms.independent_set.maximum_independent_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dwave_networkx.algorithms.independent_set.is_independent_set.html">dwave_networkx.algorithms.independent_set.is_independent_set</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../social.html">Social</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../drawing.html">Drawing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../generators.html">Graph generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../utilities.html">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../default_sampler.html">Setting a default sampler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Reference</a> &raquo;</li>
+        
+          <li><a href="../index.html">Algorithms</a> &raquo;</li>
+        
+          <li><a href="../packing.html">Independent Set</a> &raquo;</li>
+        
+      <li>dwave_networkx.algorithms.independent_set.maximum_independent_set</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../_sources/reference/algorithms/generated/dwave_networkx.algorithms.independent_set.maximum_independent_set.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dwave-networkx-algorithms-independent-set-maximum-independent-set">
+<h1>dwave_networkx.algorithms.independent_set.maximum_independent_set<a class="headerlink" href="#dwave-networkx-algorithms-independent-set-maximum-independent-set" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="dwave_networkx.algorithms.independent_set.maximum_independent_set">
+<code class="descname">maximum_independent_set</code><span class="sig-paren">(</span><em>G</em>, <em>sampler=None</em>, <em>**sampler_args</em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dwave_networkx/algorithms/independent_set.html#maximum_independent_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dwave_networkx.algorithms.independent_set.maximum_independent_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an approximate maximum independent set.</p>
+<p>Defines a QUBO with ground states corresponding to a
+maximum independent set and uses the sampler to sample from
+it.</p>
+<p>An independent set is a set of nodes such that the subgraph
+of G induced by these nodes contains no edges. A maximum
+independent set is an independent set of largest possible size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>G</strong> (<em>NetworkX graph</em>) – </li>
+<li><strong>sampler</strong> – A binary quadratic model sampler. A sampler is a process that
+samples from low energy states in models defined by an Ising
+equation or a Quadratic Unconstrained Binary Optimization
+Problem (QUBO). A sampler is expected to have a ‘sample_qubo’
+and ‘sample_ising’ method. A sampler is expected to return an
+iterable of samples, in order of increasing energy. If no
+sampler is provided, one must be provided using the
+<cite>set_default_sampler</cite> function.</li>
+<li><strong>sampler_args</strong> – Additional keyword parameters are passed to the sampler.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>indep_nodes</strong> – List of nodes that the form a maximum independent set, as
+determined by the given sampler.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dnx</span><span class="o">.</span><span class="n">maximum_independent_set</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">sampler</span><span class="p">)</span>
+<span class="go">[0, 2, 4]</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>Samplers by their nature may not return the optimal solution. This
+function does not attempt to confirm the quality of the returned
+sample.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Independent_set_(graph_theory">https://en.wikipedia.org/wiki/Independent_set_(graph_theory</a>)</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization">https://en.wikipedia.org/wiki/Quadratic_unconstrained_binary_optimization</a></p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="al" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[AL]</td><td>Lucas, A. (2014). Ising formulations of many NP problems.
+Frontiers in Physics, Volume 2, Article 5.</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dwave_networkx.algorithms.independent_set.is_independent_set.html" class="btn btn-neutral float-right" title="dwave_networkx.algorithms.independent_set.is_independent_set" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../packing.html" class="btn btn-neutral" title="Independent Set" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

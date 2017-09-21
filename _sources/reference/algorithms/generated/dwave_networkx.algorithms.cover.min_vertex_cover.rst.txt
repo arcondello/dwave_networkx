@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.cover\.min\_vertex\_cover
+======================================================
+
+.. currentmodule:: dwave_networkx.algorithms.cover
+
+.. autofunction:: min_vertex_cover

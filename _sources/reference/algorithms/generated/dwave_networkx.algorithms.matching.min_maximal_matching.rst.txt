@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.matching\.min\_maximal\_matching
+=============================================================
+
+.. currentmodule:: dwave_networkx.algorithms.matching
+
+.. autofunction:: min_maximal_matching

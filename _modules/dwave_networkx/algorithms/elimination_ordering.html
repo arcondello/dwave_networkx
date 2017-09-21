@@ -1,0 +1,698 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.algorithms.elimination_ordering &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>dwave_networkx.algorithms.elimination_ordering</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dwave_networkx.algorithms.elimination_ordering</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">sample</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;min_fill_heuristic&#39;</span><span class="p">,</span> <span class="s1">&#39;min_width_heuristic&#39;</span><span class="p">,</span> <span class="s1">&#39;max_cardinality_heuristic&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;is_simplicial&#39;</span><span class="p">,</span> <span class="s1">&#39;is_almost_simplicial&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;treewidth_branch_and_bound&#39;</span><span class="p">,</span> <span class="s1">&#39;minor_min_width&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_simplicial"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.elimination_ordering.is_simplicial.html#dwave_networkx.algorithms.elimination_ordering.is_simplicial">[docs]</a><span class="k">def</span> <span class="nf">is_simplicial</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether a node n in G is simplicial.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+<span class="sd">    n : node</span>
+<span class="sd">        A node in G.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    is_simplicial : bool</span>
+<span class="sd">        True if its neighbors form a clique.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_almost_simplicial"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.elimination_ordering.is_almost_simplicial.html#dwave_networkx.algorithms.elimination_ordering.is_almost_simplicial">[docs]</a><span class="k">def</span> <span class="nf">is_almost_simplicial</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Determines whether a node n in G is almost simplicial.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+<span class="sd">    n : node</span>
+<span class="sd">        A node in G.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    is_almost_simplicial : bool</span>
+<span class="sd">        True if all but one of its neighbors induce a clique</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">w</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">w</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="minor_min_width"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.elimination_ordering.minor_min_width.html#dwave_networkx.algorithms.elimination_ordering.minor_min_width">[docs]</a><span class="k">def</span> <span class="nf">minor_min_width</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes a lower bound on the treewidth of G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lb : int</span>
+<span class="sd">        A lower bound on the treewidth.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Based on the algorithm presented in [GD]_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># we need only deal with the adjacency structure of G. We will also</span>
+    <span class="c1"># be manipulating it directly so let&#39;s go ahead and make a new one</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+    <span class="n">lb</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># lower bound on treewidth</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+        <span class="c1"># get the node with the smallest degree</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]))</span>
+
+        <span class="c1"># find the vertex u such that the degree of u is minimal in the neighborhood of v</span>
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">neighborhood_degree</span><span class="p">(</span><span class="n">u</span><span class="p">):</span>
+            <span class="n">Gu</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">Gu</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">neighbors</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">neighborhood_degree</span><span class="p">)</span>
+
+        <span class="c1"># update the lower bound</span>
+        <span class="n">new_lb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">new_lb</span> <span class="o">&gt;</span> <span class="n">lb</span><span class="p">:</span>
+            <span class="n">lb</span> <span class="o">=</span> <span class="n">new_lb</span>
+
+        <span class="c1"># contract the edge between u, v</span>
+        <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">lb</span></div>
+
+
+<div class="viewcode-block" id="min_fill_heuristic"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.elimination_ordering.min_fill_heuristic.html#dwave_networkx.algorithms.elimination_ordering.min_fill_heuristic">[docs]</a><span class="k">def</span> <span class="nf">min_fill_heuristic</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes an upper bound on the treewidth of a graph based on</span>
+<span class="sd">    the min-fill heuristic for the elimination ordering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    treewidth_upper_bound : int</span>
+<span class="sd">        An upper bound on the treewidth of the graph G.</span>
+
+<span class="sd">    order : list</span>
+<span class="sd">        An elimination order that induces the treewidth.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Based on the algorithm presented in [GD]_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># we need only deal with the adjacency structure of G. We will also</span>
+    <span class="c1"># be manipulating it directly so let&#39;s go ahead and make a new one</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+
+    <span class="c1"># preallocate the return values</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_nodes</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_needed_edges</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="c1"># determines how many edges would needed to be added to G in order</span>
+        <span class="c1"># to make node n simplicial.</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of edges needed</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="n">e</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># We add random() which picks a value in the range [0., 1.). This is ok because the</span>
+        <span class="c1"># e are all integers. By adding a small random value, we randomize which node is</span>
+        <span class="c1"># chosen without affecting correctness.</span>
+        <span class="k">return</span> <span class="n">e</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">):</span>
+        <span class="c1"># get the node that adds the fewest number of edges when eliminated from the graph</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">_needed_edges</span><span class="p">)</span>
+
+        <span class="c1"># if the number of neighbours of v is higher than upper_bound, update</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">dv</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">:</span>
+            <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">dv</span>
+
+        <span class="c1"># make v simplicial by making its neighborhood a clique then remove the</span>
+        <span class="c1"># node</span>
+        <span class="n">_elim_adj</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">return</span> <span class="n">upper_bound</span><span class="p">,</span> <span class="n">order</span></div>
+
+
+<div class="viewcode-block" id="min_width_heuristic"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.elimination_ordering.min_width_heuristic.html#dwave_networkx.algorithms.elimination_ordering.min_width_heuristic">[docs]</a><span class="k">def</span> <span class="nf">min_width_heuristic</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes an upper bound on the treewidth of a graph based on</span>
+<span class="sd">    the min-width heuristic for the elimination ordering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    treewidth_upper_bound : int</span>
+<span class="sd">        An upper bound on the treewidth of the graph G.</span>
+
+<span class="sd">    order : list</span>
+<span class="sd">        An elimination order that induces the treewidth.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Based on the algorithm presented in [GD]_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># we need only deal with the adjacency structure of G. We will also</span>
+    <span class="c1"># be manipulating it directly so let&#39;s go ahead and make a new one</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+
+    <span class="c1"># preallocate the return values</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_nodes</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">):</span>
+        <span class="c1"># get the node with the smallest degree. We add random() which picks a value</span>
+        <span class="c1"># in the range [0., 1.). This is ok because the lens are all integers. By</span>
+        <span class="c1"># adding a small random value, we randomize which node is chosen without affecting</span>
+        <span class="c1"># correctness.</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">])</span> <span class="o">+</span> <span class="n">random</span><span class="p">())</span>
+
+        <span class="c1"># if the number of neighbours of v is higher than upper_bound, update</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">dv</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">:</span>
+            <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">dv</span>
+
+        <span class="c1"># make v simplicial by making its neighborhood a clique then remove the</span>
+        <span class="c1"># node</span>
+        <span class="n">_elim_adj</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">return</span> <span class="n">upper_bound</span><span class="p">,</span> <span class="n">order</span></div>
+
+
+<span class="k">def</span> <span class="nf">max_cardinality_heuristic</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes an upper bound on the treewidth of a graph based on</span>
+<span class="sd">    the max-cardinality heuristic for the elimination ordering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+
+<span class="sd">    inplace : bool</span>
+<span class="sd">        If True, G will be made an empty graph in the process of</span>
+<span class="sd">        running the function, otherwise the function uses a copy</span>
+<span class="sd">        of G.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    treewidth_upper_bound : int</span>
+<span class="sd">        An upper bound on the treewidth of the graph G.</span>
+
+<span class="sd">    order : list</span>
+<span class="sd">        An elimination order that induces the treewidth.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Based on the algorithm presented in [GD]_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># we need only deal with the adjacency structure of G. We will also</span>
+    <span class="c1"># be manipulating it directly so let&#39;s go ahead and make a new one</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+
+    <span class="c1"># preallocate the return values</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_nodes</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># we will need to track the nodes and how many labelled neighbors</span>
+    <span class="c1"># each node has</span>
+    <span class="n">labelled_neighbors</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">}</span>
+
+    <span class="c1"># working backwards</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">):</span>
+        <span class="c1"># pick the node with the most labelled neighbors</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">labelled_neighbors</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="n">labelled_neighbors</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+</span> <span class="n">random</span><span class="p">())</span>
+        <span class="k">del</span> <span class="n">labelled_neighbors</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+
+        <span class="c1"># increment all of its neighbors</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">labelled_neighbors</span><span class="p">:</span>
+                <span class="n">labelled_neighbors</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+        <span class="c1"># if the number of neighbours of v is higher than upper_bound, update</span>
+        <span class="n">dv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">dv</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">:</span>
+            <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">dv</span>
+
+        <span class="c1"># make v simplicial by making its neighborhood a clique then remove the node</span>
+        <span class="c1"># add v to order</span>
+        <span class="n">_elim_adj</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">upper_bound</span><span class="p">,</span> <span class="n">order</span>
+
+
+<span class="k">def</span> <span class="nf">_elim_adj</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;eliminates a variable, acting on the adj matrix of G.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        adj: dict</span>
+<span class="sd">            A dict of the form {v: neighbors, ...} where v are</span>
+<span class="sd">            vertices in a graph and neighbors is a set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">neighbors</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">neighbors</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+        <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="treewidth_branch_and_bound"><a class="viewcode-back" href="../../../reference/algorithms/generated/dwave_networkx.algorithms.elimination_ordering.treewidth_branch_and_bound.html#dwave_networkx.algorithms.elimination_ordering.treewidth_branch_and_bound">[docs]</a><span class="k">def</span> <span class="nf">treewidth_branch_and_bound</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the treewidth of a graph G and a corresponding perfect elimination ordering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : graph</span>
+<span class="sd">        A NetworkX graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    treewidth : int</span>
+<span class="sd">        The treewidth of the graph G.</span>
+<span class="sd">    order : list</span>
+<span class="sd">        An elimination order that induces the treewidth.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [GD] Gogate &amp; Dechter, &quot;A Complete Anytime Algorithm for Treewidth&quot;,</span>
+<span class="sd">       https://arxiv.org/abs/1207.4109</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># variable names are chosen to match the paper</span>
+
+    <span class="c1"># our order will be stored in vector x, named to be consistent with</span>
+    <span class="c1"># the paper</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># the partial order</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">minor_min_width</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>  <span class="c1"># our current lower bound guess, f(s) in the paper</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># g(s) in the paper</span>
+
+    <span class="c1"># we need the best current update we can find. best_found encodes the current</span>
+    <span class="c1"># upper bound and the inducing order</span>
+    <span class="n">best_found</span> <span class="o">=</span> <span class="n">min_fill_heuristic</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">ub</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">best_found</span>
+
+    <span class="c1"># if our upper bound is the same as f, then we are done! Otherwise begin the</span>
+    <span class="c1"># algorithm</span>
+    <span class="k">assert</span> <span class="n">f</span> <span class="o">&lt;=</span> <span class="n">ub</span><span class="p">,</span> <span class="s2">&quot;Logic error&quot;</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="n">ub</span><span class="p">:</span>
+        <span class="c1"># we need only deal with the adjacency structure of G. We will also</span>
+        <span class="c1"># be manipulating it directly so let&#39;s go ahead and make a new one</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+
+        <span class="n">best_found</span> <span class="o">=</span> <span class="n">_branch_and_bound</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">best_found</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_found</span></div>
+
+
+<span class="k">def</span> <span class="nf">_branch_and_bound</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">best_found</span><span class="p">,</span> <span class="n">skipable</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">theorem6p1</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">theorem6p1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theorem6p1</span> <span class="o">=</span> <span class="n">_theorem6p1</span><span class="p">()</span>
+    <span class="n">prune6p1</span><span class="p">,</span> <span class="n">explored6p1</span> <span class="o">=</span> <span class="n">theorem6p1</span>
+
+    <span class="c1"># we&#39;ll need to know our current upper bound in several places</span>
+    <span class="n">ub</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">best_found</span>
+
+    <span class="c1"># ok, take care of the base case first</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># check if our current branch is better than the best we&#39;ve already</span>
+        <span class="c1"># found and if so update our best solution accordingly.</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="o">&lt;</span> <span class="n">ub</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">adj</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">best_found</span>
+
+    <span class="c1"># so we have not yet reached the base case</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">:</span>
+
+        <span class="c1"># we don&#39;t need to consider the neighbors of the last vertex eliminated</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">skipable</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">g_s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]))</span>
+
+        <span class="c1"># according to Lemma 5.3, we can skip all of the neighbors of the last</span>
+        <span class="c1"># variable eliniated when choosing the next variable</span>
+        <span class="n">next_skipable</span> <span class="o">=</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>  <span class="c1"># this does not get altered so we don&#39;t need a copy</span>
+
+        <span class="c1"># update the state by eliminating n and adding it to the partial ordering</span>
+        <span class="n">adj_s</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">}</span>  <span class="c1"># create a new object</span>
+        <span class="n">_elim_adj</span><span class="p">(</span><span class="n">adj_s</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">x_s</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="p">[</span><span class="n">n</span><span class="p">]</span>  <span class="c1"># new partial ordering</span>
+
+        <span class="k">if</span> <span class="n">prune6p1</span><span class="p">(</span><span class="n">x_s</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># By Theorem 5.4, if any two vertices have ub + 1 common neighbors then</span>
+        <span class="c1"># we can add an edge between them</span>
+        <span class="n">_theorem5p4</span><span class="p">(</span><span class="n">adj_s</span><span class="p">,</span> <span class="n">ub</span><span class="p">)</span>
+
+        <span class="c1"># ok, let&#39;s update our values</span>
+        <span class="n">f_s</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">g_s</span><span class="p">,</span> <span class="n">minor_min_width</span><span class="p">(</span><span class="n">adj_s</span><span class="p">))</span>
+
+        <span class="n">g_s</span><span class="p">,</span> <span class="n">f_s</span> <span class="o">=</span> <span class="n">_graph_reduction</span><span class="p">(</span><span class="n">adj_s</span><span class="p">,</span> <span class="n">x_s</span><span class="p">,</span> <span class="n">g_s</span><span class="p">,</span> <span class="n">f_s</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">f_s</span> <span class="o">&lt;</span> <span class="n">ub</span><span class="p">:</span>
+            <span class="n">best_found</span> <span class="o">=</span> <span class="n">_branch_and_bound</span><span class="p">(</span><span class="n">adj_s</span><span class="p">,</span> <span class="n">x_s</span><span class="p">,</span> <span class="n">g_s</span><span class="p">,</span> <span class="n">f_s</span><span class="p">,</span> <span class="n">best_found</span><span class="p">,</span>
+                                           <span class="n">next_skipable</span><span class="p">,</span> <span class="n">theorem6p1</span><span class="p">)</span>
+            <span class="n">ub</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">best_found</span>
+
+    <span class="c1"># let&#39;s store some information for pruning</span>
+    <span class="n">explored6p1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_found</span>
+
+
+<span class="k">def</span> <span class="nf">_graph_reduction</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;we can go ahead and remove any simplicial or almost-simplicial vertices from adj.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">as_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">f</span> <span class="ow">and</span> <span class="n">is_almost_simplicial</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">v</span><span class="p">)}</span>
+    <span class="k">while</span> <span class="n">as_nodes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">as_nodes</span><span class="p">:</span>
+
+            <span class="c1"># update g and f</span>
+            <span class="n">dv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">dv</span> <span class="o">&gt;</span> <span class="n">g</span><span class="p">:</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">dv</span>
+            <span class="k">if</span> <span class="n">g</span> <span class="o">&gt;</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">g</span>
+
+            <span class="c1"># eliminate v</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">_elim_adj</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+        <span class="c1"># see if we have any more simplicial nodes</span>
+        <span class="n">as_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">adj</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">f</span> <span class="ow">and</span> <span class="n">is_almost_simplicial</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">v</span><span class="p">)}</span>
+
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">f</span>
+
+
+<span class="k">def</span> <span class="nf">_theorem5p4</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">ub</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;By Theorem 5.4, if any two vertices have ub + 1 common neighbors</span>
+<span class="sd">    then we can add an edge between them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+            <span class="c1"># already an edge</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="n">ub</span><span class="p">:</span>
+            <span class="n">new_edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="k">while</span> <span class="n">new_edges</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_edges</span><span class="p">:</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+
+        <span class="n">new_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="n">ub</span><span class="p">:</span>
+                <span class="n">new_edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_theorem6p1</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;See Theorem 6.1 in paper.&quot;&quot;&quot;</span>
+    <span class="n">pruning_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_prune</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># this is faster than tuple(x[-3:])</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pruning_set</span>
+
+    <span class="k">def</span> <span class="nf">_explored</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">prunable</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">pruning_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prunable</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_prune</span><span class="p">,</span> <span class="n">_explored</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

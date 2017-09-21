@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dwave_networkx.architectures &mdash; D-Wave NetworkX 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="D-Wave NetworkX 0.5.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> D-Wave NetworkX
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about_dwave.html">About D-Wave</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Bibliography</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">D-Wave NetworkX</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>dwave_networkx.architectures</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dwave_networkx.architectures</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generators for some graphs derived from the D-Wave System.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.bipartite</span> <span class="k">import</span> <span class="n">color</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="k">import</span> <span class="n">diameter</span>
+
+<span class="kn">from</span> <span class="nn">dwave_networkx</span> <span class="k">import</span> <span class="n">_PY2</span>
+<span class="kn">from</span> <span class="nn">dwave_networkx.exceptions</span> <span class="k">import</span> <span class="n">DWaveNetworkXException</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chimera_graph&#39;</span><span class="p">,</span> <span class="s1">&#39;find_chimera_indices&#39;</span><span class="p">]</span>
+
+<span class="c1"># compatibility for python 2/3</span>
+<span class="k">if</span> <span class="n">_PY2</span><span class="p">:</span>
+    <span class="nb">range</span> <span class="o">=</span> <span class="n">xrange</span>
+
+
+<div class="viewcode-block" id="chimera_graph"><a class="viewcode-back" href="../../reference/generated/dwave_networkx.architectures.chimera_graph.html#dwave_networkx.architectures.chimera_graph">[docs]</a><span class="k">def</span> <span class="nf">chimera_graph</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a Chimera lattice of size (m, n, t).</span>
+
+<span class="sd">    A Chimera lattice is an m by n grid of Chimera Tiles. Each Chimera</span>
+<span class="sd">    tile is itself a bipartite graph with shores of size t. The</span>
+<span class="sd">    connection in a Chimera lattice can expressed using a node indexing</span>
+<span class="sd">    notation (i,j,u,k) for each node. (i,j) indexes the (row, column)</span>
+<span class="sd">    of the Chimera Tile. i must be between 0 and m-1 inclusive, and j</span>
+<span class="sd">    must be between 0 and n-1 inclusive. u=0 indicates the left hand</span>
+<span class="sd">    nodes in the tile, and u=1 indicates the right hand nodes.</span>
+<span class="sd">    k=0,1,...,t-1 indexes nodes within either the left- or right-hand</span>
+<span class="sd">    shores of a tile.</span>
+
+<span class="sd">    In this notation, two nodes (i, j, u, k) and (i&#39;, j&#39;, u&#39;, k&#39;) are</span>
+<span class="sd">    neighbors if and only if::</span>
+
+<span class="sd">        (i = i&#39; AND j = j&#39; AND u != u&#39;) OR</span>
+<span class="sd">        (i = i&#39; +/- 1 AND j = j&#39; AND u = 0 AND u&#39; = 0 AND k = k&#39;) OR</span>
+<span class="sd">        (i = i&#39; AND j = j&#39; +/- 1 AND u = 1 AND u&#39; = 1 AND k = k&#39;)</span>
+
+<span class="sd">    The first line gives the bipartite connections within the tile.</span>
+<span class="sd">    The second and third give the vertical and horizontal connections</span>
+<span class="sd">    between blocks respectively.</span>
+
+<span class="sd">    Node (i, j, u, k) is labeled by:</span>
+
+<span class="sd">        label = i * n * 2 * t + j * 2 * t + u * t + k</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The number of rows in the Chimera lattice.</span>
+<span class="sd">    n : int, optional (default m)</span>
+<span class="sd">        The number of columns in the Chimera lattice.</span>
+<span class="sd">    t : int, optional (default 4)</span>
+<span class="sd">        The size of the shore within each Chimera tile.</span>
+<span class="sd">    create_using : Graph, optional (default None)</span>
+<span class="sd">        If provided this graph is cleared of nodes and edges and filled</span>
+<span class="sd">        with the new graph. Usually used to set the type of the graph.</span>
+<span class="sd">    node_list : iterable, optional (default None)</span>
+<span class="sd">        Iterable of nodes in the graph. If None, calculated from (m, n, t).</span>
+<span class="sd">        Note that this list is used to remove nodes, so any nodes specified</span>
+<span class="sd">        not in range(m * n * 2 * t) will not be added.</span>
+<span class="sd">    edge_list : iterable, optional (default None)</span>
+<span class="sd">        Iterable of edges in the graph. If None, edges are generated as</span>
+<span class="sd">        described above. The nodes in each edge must be integer-labeled in</span>
+<span class="sd">        range(m * n * t * 2).</span>
+<span class="sd">    data : bool, optional (default True)</span>
+<span class="sd">        If True, each node has a chimera_index attribute. The attribute</span>
+<span class="sd">        is a 4-tuple Chimera index as defined above.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    G : a NetworkX Graph</span>
+<span class="sd">        An (m, n, t) Chimera lattice. Nodes are labeled by integers.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ========</span>
+<span class="sd">    &gt;&gt;&gt; G = dnx.chimera_graph(1, 1, 2)  # a single Chimera tile</span>
+<span class="sd">    &gt;&gt;&gt; len(G)</span>
+<span class="sd">    4</span>
+<span class="sd">    &gt;&gt;&gt; list(G.nodes())</span>
+<span class="sd">    [0, 1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; list(G.nodes(data=True))  # doctest: +SKIP</span>
+<span class="sd">    [(0, {&#39;chimera_index&#39;: (0, 0, 0, 0)}),</span>
+<span class="sd">     (1, {&#39;chimera_index&#39;: (0, 0, 0, 1)}),</span>
+<span class="sd">     (2, {&#39;chimera_index&#39;: (0, 0, 1, 0)}),</span>
+<span class="sd">     (3, {&#39;chimera_index&#39;: (0, 0, 1, 1)})]</span>
+<span class="sd">    &gt;&gt;&gt; list(G.edges())</span>
+<span class="sd">    [(0, 2), (0, 3), (1, 2), (1, 3)]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">m</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">empty_graph</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="p">)</span>
+
+    <span class="n">G</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;chimera_graph(</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="n">max_size</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span>  <span class="c1"># max number of nodes G can have</span>
+
+    <span class="k">if</span> <span class="n">edge_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">hoff</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span>
+        <span class="n">voff</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">hoff</span>
+        <span class="n">mi</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">voff</span>
+        <span class="n">ni</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">hoff</span>
+
+        <span class="c1"># tile edges</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">k0</span><span class="p">,</span> <span class="n">k1</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ni</span><span class="p">,</span> <span class="n">hoff</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">mi</span><span class="p">,</span> <span class="n">voff</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k0</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="n">t</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">t</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span><span class="p">))</span>
+        <span class="c1"># horizontal edges</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="n">hoff</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">ni</span> <span class="o">-</span> <span class="n">hoff</span><span class="p">,</span> <span class="n">hoff</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">mi</span><span class="p">,</span> <span class="n">voff</span><span class="p">))</span>
+        <span class="c1"># vertical edges</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="n">voff</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">ni</span><span class="p">,</span> <span class="n">hoff</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">mi</span> <span class="o">-</span> <span class="n">voff</span><span class="p">,</span> <span class="n">voff</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">node_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="o">-</span> <span class="n">nodes</span><span class="p">)</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>  <span class="c1"># for singleton nodes</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
+                                <span class="n">G</span><span class="o">.</span><span class="n">node</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s1">&#39;chimera_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                            <span class="n">v</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="find_chimera_indices"><a class="viewcode-back" href="../../reference/generated/dwave_networkx.architectures.find_chimera_indices.html#dwave_networkx.architectures.find_chimera_indices">[docs]</a><span class="k">def</span> <span class="nf">find_chimera_indices</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Tries to determine the Chimera indices of the nodes in G.</span>
+
+<span class="sd">    See chimera_graph for a definition of a Chimera graph and Chimera</span>
+<span class="sd">    indices.</span>
+
+<span class="sd">    Only works for single tile Chimera graphs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : a NetworkX graph.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    chimera_indices : dict</span>
+<span class="sd">        A dict of the form {node: (i, j, u, k), ...} where (i, j, u, k)</span>
+<span class="sd">        is a 4-tuple of integer Chimera indices.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = dnx.chimera_graph(1, 1, 4)</span>
+<span class="sd">    &gt;&gt;&gt; chimera_indices = dnx.find_chimera_indices(G)</span>
+
+<span class="sd">    &gt;&gt;&gt; G = nx.Graph()</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from([(0, 2), (1, 2), (1, 3), (0, 3)])</span>
+<span class="sd">    &gt;&gt;&gt; chimera_indices = dnx.find_chimera_indices(G)</span>
+<span class="sd">    &gt;&gt;&gt; nx.set_node_attributes(G, &#39;chimera_index&#39;, chimera_indices)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if the nodes are orderable, we want the lowest order one.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">nlist</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">nlist</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nlist</span><span class="p">)</span>
+
+    <span class="c1"># create the object that will store the indices</span>
+    <span class="n">chimera_indices</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># ok, let&#39;s first check for the simple cases</span>
+    <span class="k">if</span> <span class="n">n_nodes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">chimera_indices</span>
+    <span class="k">elif</span> <span class="n">n_nodes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DWaveNetworkXException</span><span class="p">(</span><span class="s1">&#39;Singleton graphs are not Chimera-structured&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">n_nodes</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">nlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">nlist</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+
+    <span class="c1"># next, let&#39;s get the bicoloring of the graph, this raises an exception of the graph is</span>
+    <span class="c1"># not bipartite</span>
+    <span class="n">coloring</span> <span class="o">=</span> <span class="n">color</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># we want the color of the node to be the u term in the Chimera-index, so we want the</span>
+    <span class="c1"># first node in nlist to be color 0</span>
+    <span class="k">if</span> <span class="n">coloring</span><span class="p">[</span><span class="n">nlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">coloring</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">coloring</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">coloring</span><span class="p">}</span>
+
+    <span class="c1"># we also want the diameter of the graph</span>
+    <span class="c1"># claim: diameter(G) == m + n for |G| &gt; 2</span>
+    <span class="n">dia</span> <span class="o">=</span> <span class="n">diameter</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># we have already handled the |G| &lt;= 2 case, so we know, for diameter == 2, that the Chimera</span>
+    <span class="c1"># graph is a single tile</span>
+    <span class="k">if</span> <span class="n">dia</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">shore_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">coloring</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">chimera_indices</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">shore_indices</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+            <span class="n">shore_indices</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">chimera_indices</span>
+
+    <span class="c1"># NB: max degree == shore size &lt;==&gt; one tile</span>
+
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;not yet implemented for Chimera graphs with more than one tile&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, D-Wave Systems Inc.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.5.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

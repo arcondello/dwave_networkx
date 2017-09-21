@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.cover\.is\_vertex\_cover
+=====================================================
+
+.. currentmodule:: dwave_networkx.algorithms.cover
+
+.. autofunction:: is_vertex_cover

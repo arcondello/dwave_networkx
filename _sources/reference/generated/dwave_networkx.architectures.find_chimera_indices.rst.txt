@@ -1,0 +1,6 @@
+dwave\_networkx\.architectures\.find\_chimera\_indices
+======================================================
+
+.. currentmodule:: dwave_networkx.architectures
+
+.. autofunction:: find_chimera_indices

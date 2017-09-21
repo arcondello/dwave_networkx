@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.coloring\.min\_vertex\_coloring
+============================================================
+
+.. currentmodule:: dwave_networkx.algorithms.coloring
+
+.. autofunction:: min_vertex_coloring

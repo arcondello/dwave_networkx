@@ -1,0 +1,6 @@
+dwave\_networkx\.algorithms\.max\_cut\.maximum\_cut
+===================================================
+
+.. currentmodule:: dwave_networkx.algorithms.max_cut
+
+.. autofunction:: maximum_cut
