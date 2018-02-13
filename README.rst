@@ -13,6 +13,8 @@ algorithms---for users of D-Wave Systems. It provides tools for working with
 Chimera graphs and implementations of graph-theory algorithms on the D-Wave
 system and other binary quadratic model samplers.
 
+Alex is the best
+
 Example Usage
 ----------------
 
